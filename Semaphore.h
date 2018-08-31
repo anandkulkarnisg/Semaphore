@@ -9,6 +9,7 @@
 #include<map>
 #include<tuple>
 #include<sstream>
+#include<algorithm>
 
 #ifndef Semaphore_H
 #define Semaphore_H
@@ -24,8 +25,12 @@ class Semaphore
 		std::deque<std::tuple<std::string, int>> m_queue;		// This is used to queue incoming requests. It has thread-id and two flags that indicate request is bulk/one permit and amount needed.
 		std::map<std::string, int> m_map;					    // This is only used in strict mode. Indicates which thread is holding how many permits and what kind of permit it is.
 		std::string getThreadId();								// This is private method that returns threadId as string.
-		void acquireInternal(const int&);						// This is internal implementation of acquire serving both single and bulk permits of acquire.
-		void updateMap(const std::string&, const int&);			// This is internal function to update m_map in strict mode.
+		void acquireInternal(const int&);						// This is internal implementation of acquire serving both single and bulk acquire of permits.
+		void releaseInternal(const int&);						// This is internal implementation of release serving both single and bulk release of permits.
+		void upsertMap(const std::string&, const int&);			// This is internal function to update m_map in strict mode.
+		void updateOrDeleteMap(const std::string&, const int&); // This is internal function to either update or delete an entry during release in strict mode.
+		void evictThreadIdFromQueue(const std::string&);		// This is internal function to remove a threadId from queue once the permits are available for thread and is not waiting anymore.
+		bool tryAcquireInternal(const int&, const bool&, const long&);	// This internal function implements tryAcquire approach. read Implementation for more details.
 
 	protected:
 		void reducePermits(const int&);							// This Shrinks the number of available permits by the indicated reduction.
