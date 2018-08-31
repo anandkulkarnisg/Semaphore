@@ -11,6 +11,8 @@
 #include<sstream>
 #include<algorithm>
 
+#include "SemaphoreExceptions.h"
+
 #ifndef Semaphore_H
 #define Semaphore_H
 

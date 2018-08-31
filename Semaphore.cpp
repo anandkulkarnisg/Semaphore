@@ -180,7 +180,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 {
 	// First of all if the permits is a -ve number then throw IllegalArgumentException. 
 	if(permits<0)
-		throw string("Exception : release method can not have -ve permits. Please check the value");
+		throw string("Exception : release method can not have -ve permits. Please check the value.");
 
 	// Take a lock and start the work.
 	unique_lock<mutex> exclusiveLock(m_mutex);
@@ -260,10 +260,13 @@ bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeed
 			unique_lock<mutex> exclusiveLock(m_mutex, defer_lock);
 			if(exclusiveLock.try_lock())
 			{
-				m_permits-=permits;
-				if(isStrict())
-					upsertMap(threadId, permits);
-				return(true);
+				if(m_permits-permits>=0)	// DCLP because after acquiring mutex we dont know if m_count is still valid.
+				{
+					m_permits-=permits;
+					if(isStrict())
+						upsertMap(threadId, permits);
+					return(true);
+				}
 			}
 			else
 			{

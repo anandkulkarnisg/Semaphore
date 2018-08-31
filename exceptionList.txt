@@ -1,0 +1,4 @@
+IllegalArgumentException|Exception : Initialization not allowed with -ve permits in strict mode. Use relaxed mode instead.
+IllegalReleasePermitsArgumentException|Exception : release method can not have -ve permits. Please check the value.
+IllegalReleasePermitsReleaseException|Exception : An attempt was made to release permits greater than the current number of permits [in strict mode] held by the thread id = 
+IllegalRelasePermitsException|Exception : An attempt was made by thread id = to release permits in strict mode where it has no currently acquired permits.Please investigate.
