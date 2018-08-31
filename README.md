@@ -1,10 +1,10 @@
-# Semaphore
+ Semaphore
 Implementation of a Semaphore in C++ [ Conforming to Implementation interface of standard of Java ].
 
-# Author : Anand Kulkarni - 29/08/2018 - Implementation of a Semaphore trying to conform to the Java Implementation standard with additional features.
-# Source : https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Semaphore.html
+Author : Anand Kulkarni - 29/08/2018 - Implementation of a Semaphore trying to conform to the Java Implementation standard with additional features.
+Source : https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Semaphore.html
 
-#Design Decisions:
+Design Decisions:
 
 1. The semaphore implemented in Java and in general does not have concept of ownership. Additional permits may be added and acquired as required dynamically greater than initial 
    permits supplied to the semaphore.
@@ -27,7 +27,7 @@ Implementation of a Semaphore in C++ [ Conforming to Implementation interface of
 4. A debug function is additional which allows to print at any time the current permits available and which thread is using them [ thread id is indicated ]. This is only useful for strict
    mode. In relaxed mode this info is meaningless since any thread can add and drain permits as required and there is no concept of ownership of permit by thread.
 
-# Resources :
+Resources :
 - https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Semaphore.html
 - https://stackoverflow.com/questions/17825508/fairness-setting-in-semaphore-class
 - https://stackoverflow.com/questions/52108061/java-semaphore-implementation-design-related-questions
