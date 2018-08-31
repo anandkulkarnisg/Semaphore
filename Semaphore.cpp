@@ -131,9 +131,9 @@ int Semaphore::drainPermits()
 		{
 			returnPermits=abs(m_permits);
 			m_permits=0;
-			return(returnPermits);
 		}
 	}
+	return(returnPermits);
 }
 
 // Implement the method getQueuedThreads. Return a vector of string each of which is a threadId that is currently queued waiting for a permit to become available.
@@ -200,7 +200,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 		if(iter != m_map.end())
 		{	
 			int permitCount=iter->second;
-			if(permitCount<=permits)
+			if(permits>permitCount)
 			{
 				throw string("Exception : An attempt was made to release permits greater than the current number of permits [in strict mode] held by the thread id = " + threadId);
 			}				
