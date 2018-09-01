@@ -326,10 +326,14 @@ bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeed
 							upsertMap(threadId, permits);
 						return(true);	
 					}
-				}			
-				endTime =  std::chrono::high_resolution_clock::now();
-				duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();				
-			}
+					else
+					{
+						exclusiveLock.unlock();	// Else we have a possibility of same thread trying to Lock the mutex multiple times.
+					}
+				}		
+			}	
+			endTime =  std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();				
 		}	
 	}
 	return(false);

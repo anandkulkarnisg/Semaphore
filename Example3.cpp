@@ -51,6 +51,9 @@ void waitThreadFunc(const int& permits)
 	}
 }
 
+// This code example may get blocked at t1 thread indefinitely. This is not a bug. because thread t2 and t3 jump ahead and acquire 2,3 permits and only 5 are left from 10.
+// Next t1 attempts to acquire 10 permits but only 5 are present.so it is blocked!! This is bug at application layer.
+
 int main(int argc, char* argv[])
 {
 	// Test Case 1 : Spin a thread that will acquire all the permits and wait for given period of time and then release the permit.

@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	std::cout << "tryAcquire status = " << acquireStatus << std::endl;
 
 	// Now attempt acquire with wait semantics. It should also fail since it cant get anything. Wait for 500 msecs.
-	acquireStatus=sem.tryAcquire(500);
+	acquireStatus=sem.tryAcquire(500l);
 	std::cout << "tryAcquire with wait status = " << acquireStatus << std::endl;
 
 	// Now release the permits back to Semaphore.
