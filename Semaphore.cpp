@@ -14,12 +14,12 @@ Semaphore::Semaphore(const int& initialPermits, const bool& fair = false, const 
 }
 
 // Implement simple method to get semaphore name. We dont want to keep deriving this repetative calls of toString().
-std::string Semaphore::getName()
+string Semaphore::getName()
 {
 	const void * address = static_cast<const void*>(this);
-	std::stringstream stream;
+	stringstream stream;
 	stream << address;
-	std::string result = stream.str();
+	string result = stream.str();
 	return(result);
 }
 
@@ -75,8 +75,8 @@ void Semaphore::acquireInternal(const int& permits = 1)
 	unique_lock<mutex> exclusiveLock(m_mutex);
 	string threadId = getThreadId();
 
-	// Now check if permits are available. If so simply reduce its count.
-	if(m_permits-permits>=0)
+	// Now check if permits are available and waitQueue is empty. If so simply reduce its count directly.
+	if(m_permits-permits>=0 && m_queue.size()==0)
 	{
 		m_permits-=permits;
 		// Now if we are in mode of strictness. Add this info to the map.
@@ -163,7 +163,7 @@ void Semaphore::printQueuedThreadsInfo()
 {
 	deque<tuple<string,int>> resultQueue = getQueuedThreads();
 	for(const auto& iter : resultQueue)
-		std::cout << "Waiting Thread id = " << get<0>(iter) << ", acquireCount = " << get<1>(iter) << std::endl;
+		cout << "Waiting Thread id = " << get<0>(iter) << ", acquireCount = " << get<1>(iter) << endl;
 }
 
 // Implement getQueueLength Method. Returns the length of the Queue of threads that are currently waiting for the permit to become available.
@@ -257,10 +257,10 @@ void Semaphore::release(const int& permits)
 
 // This implemements the toString Method. It currently indicates the status of the Semaphore with as much detail as possible in single Line!. Additional details required for debugging
 // Must be implemented via getQueuedThreads or printCurrentPermitsInfo Methods.
-std::string Semaphore::toString()
+string Semaphore::toString()
 {
 	unique_lock<mutex> exclusiveLock(m_mutex);
-	std::string returnString = " ==> [ Semaphore Name = Semaphore." + m_name;	
+	string returnString = " ==> [ Semaphore Name = Semaphore." + m_name;	
 	returnString += ", permits available = " + to_string(m_permits);
 	returnString += ", fairness = " + to_string(m_fair);
 	returnString += ", strict = " + to_string(m_strict);
@@ -309,8 +309,8 @@ bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeed
 	{
 		if(waitTimeMilliSecs == 0)
 			return(false);
-		auto startTime = std::chrono::high_resolution_clock::now();
-		auto endTime =  std::chrono::high_resolution_clock::now();
+		auto startTime = chrono::high_resolution_clock::now();
+		auto endTime =  chrono::high_resolution_clock::now();
 		auto duration = 0;
 		while(duration<=waitTimeMilliSecs)
 		{
@@ -332,8 +332,8 @@ bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeed
 					}
 				}		
 			}	
-			endTime =  std::chrono::high_resolution_clock::now();
-			duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();				
+			endTime =  chrono::high_resolution_clock::now();
+			duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count();				
 		}	
 	}
 	return(false);
@@ -376,7 +376,7 @@ void Semaphore::printCurrentPermitsInfo()
 	if(isStrict())
 	{
 		for(const auto& iter : m_map)
-			std::cout << "Thread id = " << iter.first << ", permitCount = " << iter.second << std::endl;
+			cout << "Thread id = " << iter.first << ", permitCount = " << iter.second << endl;
 	}
 }
 

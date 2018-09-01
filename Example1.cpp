@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	{
 		test.acquire();
 		test.printCurrentPermitsInfo();
-		std::cout << "Status of the Semaphore is " << test.toString() << std::endl;	
+		cout << "Status of the Semaphore is " << test.toString() << endl;	
 	}
 
 	// Test case 2 : Release back the permits and test the same settings.
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	{	
 		test.release();
 		test.printCurrentPermitsInfo();
-		std::cout << "Status of the Semaphore is " << test.toString() << std::endl;
+		cout << "Status of the Semaphore is " << test.toString() << endl;
 	}			
 
 	// Test case 3 : Now try to reduce the permit again , it should throw an exception because the current thread does not have any permits acquired leftover.
@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
 	{
 		test.release();
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		cout << e.what() << endl;
 	}
 
 	// Test case 4 : Attempt now to try and release -ve permits. Should recieve an exception.
@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
 	{
 		test.release(-100);
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		cout << e.what() << endl;
 	}
 
 	// Test case 5 : Attempt now to bulk acquire some permits again.Should work.
@@ -50,11 +50,11 @@ int main(int argc, char* argv[])
 	{	
 		test.acquire(4);
 		test.printCurrentPermitsInfo();
-		std::cout << "Status of the Semaphore is " << test.toString() << std::endl;
+		cout << "Status of the Semaphore is " << test.toString() << endl;
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		cout << e.what() << endl;
 	}
 
 	// Test case 6 : Attempt now a clean bulk release of the same permits.Should work.
@@ -62,24 +62,24 @@ int main(int argc, char* argv[])
 	{
 		test.release(4);
 		test.printCurrentPermitsInfo();
-		std::cout << "Status of the Semaphore is " << test.toString() << std::endl;
+		cout << "Status of the Semaphore is " << test.toString() << endl;
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		cout << e.what() << endl;
 	}
 
 	// Test case 7 : Now attempt bulk acquire of more capacity than initially assigned. Should block the current thread.
 	try
 	{
-		std::cout << "Press CNTRL-C to exit the progream. The current thread acquire is waiting in the queue" << std::endl;
+		cout << "Press CNTRL-C to exit the progream. The current thread acquire is waiting in the queue" << endl;
 		test.acquire(11);
 		test.printCurrentPermitsInfo();
-		std::cout << "Status of the Semaphore is " << test.toString() << std::endl;
+		cout << "Status of the Semaphore is " << test.toString() << endl;
 	}
-	catch(const std::exception& e)
+	catch(const exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		cout << e.what() << endl;
 	}
 
 	return(0);
