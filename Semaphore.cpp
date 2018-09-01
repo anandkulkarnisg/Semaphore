@@ -10,6 +10,17 @@ Semaphore::Semaphore(const int& initialPermits, const bool& fair = false, const 
 {
 	if(strict && initialPermits<0)
 		throw string("Exception : Initialization not allowed with -ve permits in strict mode. Use relaxed mode instead.");
+	m_name = getName();
+}
+
+// Implement simple method to get semaphore name. We dont want to keep deriving this repetative calls of toString().
+std::string Semaphore::getName()
+{
+	const void * address = static_cast<const void*>(this);
+	std::stringstream stream;
+	stream << address;
+	std::string result = stream.str();
+	return(result);
 }
 
 // Implementation of getThreadId Method. Returns a string of thread-id number.
@@ -77,7 +88,7 @@ void Semaphore::acquireInternal(const int& permits = 1)
 		m_queue.push_back(make_tuple(threadId,permits));
 		if(isFair())
 		{
-			m_cond.wait(exclusiveLock, [&](){ return((m_permits-permits)>0 && get<0>(m_queue[0]) == threadId); });
+			m_cond.wait(exclusiveLock, [&](){ return((m_permits-permits)>=0 && get<0>(m_queue[0]) == threadId); });
 			m_queue.pop_front();
 		}
 		else
@@ -186,6 +197,10 @@ bool Semaphore::isStrict()
 // Implement releaseInternal Method. Tries to release the permit(s) that a thread has acquired.Throws exception in case of strict mode where a release is tried without having acquired any permit.
 void Semaphore::releaseInternal(const int& permits=1)
 {
+	// Edge case : if permits is zero. simply return. We dont acquire zero permits.
+	if(permits==0)
+		return;
+
 	// First of all if the permits is a -ve number then throw IllegalArgumentException. 
 	if(permits<0)
 		throw IllegalReleasePermitsArgumentException();
@@ -198,7 +213,8 @@ void Semaphore::releaseInternal(const int& permits=1)
 	if(!isStrict())
 	{
 		m_permits+=permits;
-		// Notify the waiting acquire threads.
+		// Notify the waiting acquire threads. Unlock before notification else waiting threads will never get the Lock!
+		exclusiveLock.unlock();
 		m_cond.notify_all();
 		return;
 	}
@@ -216,6 +232,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 			{
 				m_permits+=permits;
 				updateOrDeleteMap(threadId,permitCount-permits);
+				exclusiveLock.unlock();
 				m_cond.notify_all();
 			}
 		}	
@@ -242,10 +259,8 @@ void Semaphore::release(const int& permits)
 // Must be implemented via getQueuedThreads or printCurrentPermitsInfo Methods.
 std::string Semaphore::toString()
 {
-	const void * address = static_cast<const void*>(this);
-	std::stringstream stream;
-	stream << address;  
-	std::string returnString = " ==> [ Semaphore Name = Semaphore." + stream.str();	
+	unique_lock<mutex> exclusiveLock(m_mutex);
+	std::string returnString = " ==> [ Semaphore Name = Semaphore." + m_name;	
 	returnString += ", permits available = " + to_string(m_permits);
 	returnString += ", fairness = " + to_string(m_fair);
 	returnString += ", strict = " + to_string(m_strict);
@@ -259,6 +274,10 @@ std::string Semaphore::toString()
 
 bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeeded = false, const long& waitTimeMilliSecs=0)
 {
+	// Edge case : if permits is zero. simply return. We dont acquire zero permits.
+	if(permits==0)
+		return(true);
+
 	// First of all check if we are in wait mode or not.
 	string threadId = getThreadId();
 	if(!timeOutNeeded)
@@ -300,10 +319,13 @@ bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeed
 				unique_lock<mutex> exclusiveLock(m_mutex, defer_lock);
 				if(exclusiveLock.try_lock())
 				{
-					m_permits-=permits;
-					if(isStrict())
-						upsertMap(threadId, permits);
-					return(true);	
+					if(m_permits-permits>=0)    // DCLP because after acquiring mutex we dont know if m_count is still valid.
+					{
+						m_permits-=permits;
+						if(isStrict())
+							upsertMap(threadId, permits);
+						return(true);	
+					}
 				}			
 				endTime =  std::chrono::high_resolution_clock::now();
 				duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();				

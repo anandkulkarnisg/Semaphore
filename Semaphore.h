@@ -20,6 +20,7 @@ class Semaphore
 {
 	private:
 		int m_permits = 0;										// This is the initial number of permits assigned to the semaphore.It can increase or decrease later on while usage.
+		std::string m_name;										// Name specific to the Semaphore.
 		std::mutex m_mutex;										// This is used to manage the synchronization of the threads.		
 		std::condition_variable m_cond;							// It is used for signalling purpose between threads.
 		bool m_fair = false;									// Is is used to indicate if the Semaphore is fair in dealing with queued threads/requests. by default is it false.		
@@ -33,6 +34,7 @@ class Semaphore
 		void updateOrDeleteMap(const std::string&, const int&); // This is internal function to either update or delete an entry during release in strict mode.
 		void evictThreadIdFromQueue(const std::string&);		// This is internal function to remove a threadId from queue once the permits are available for thread and is not waiting anymore.
 		bool tryAcquireInternal(const int&, const bool&, const long&);	// This internal function implements tryAcquire approach. read Implementation for more details.
+		std::string getName();									// This is to derive the Latch name during construction.
 
 	protected:
 		void reducePermits(const int&);							// This Shrinks the number of available permits by the indicated reduction.
