@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Semaphore binarysemLock(1,true,true);
+Semaphore binarySemLock(1,true,true);
 const int demoLoopCount = 100;
 
 void printMessage()
@@ -13,9 +13,9 @@ void printMessage()
 	int loopCount=0;
 	while(loopCount<demoLoopCount)
 	{
-		binarysemLock.acquire();
+		binarySemLock.acquire();
 		cout << "I am currently in thread id =" << this_thread::get_id() << " with a count = " << loopCount << endl;
-		binarysemLock.release();
+		binarySemLock.release();
 		++loopCount;
 	}
 }
