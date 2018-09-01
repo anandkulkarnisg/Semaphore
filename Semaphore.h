@@ -1,15 +1,15 @@
-#include<iostream>
-#include<string>
-#include<mutex>
+#include<algorithm>
+#include<chrono>
 #include<condition_variable>
 #include<deque>
-#include<thread>
-#include<chrono>
-#include<vector>
+#include<iostream>
 #include<map>
-#include<tuple>
+#include<mutex>
 #include<sstream>
-#include<algorithm>
+#include<string>
+#include<thread>
+#include<tuple>
+#include<vector>
 
 #include "SemaphoreExceptions.h"
 
