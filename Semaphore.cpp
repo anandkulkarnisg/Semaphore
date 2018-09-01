@@ -127,8 +127,13 @@ int Semaphore::availablePermits()
 // Implement drain permits. Acquires and returns all permits that are immediately available, or if negative permits are available, releases them. Upon return, zero permits are available.
 int Semaphore::drainPermits()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	// Edge case : If there are no permits do nothing and return.
 	int returnPermits = 0;
+	if(m_permits==0)
+		return(returnPermits);
+
+	unique_lock<mutex> exclusiveLock(m_mutex);
+
 	// Weather strict or relaxed mode if permits are available then acquire and release them. If zero permits are available them return zero.
 	// In relaxed mode permits can go -ve , in which case add permits and set it to zero.
 
