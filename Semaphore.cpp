@@ -9,7 +9,7 @@ using namespace std;
 Semaphore::Semaphore(const int& initialPermits, const bool& fair = false, const bool& strict = false) : m_permits(initialPermits), m_fair(fair), m_strict(strict)
 {
 	if(strict && initialPermits<0)
-		throw string("Exception : Initialization not allowed with -ve permits in strict mode. Use relaxed mode instead.");
+		throw IllegalArgumentException();
 	m_name = getName();
 }
 
@@ -203,7 +203,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 
 	// First of all if the permits is a -ve number then throw IllegalArgumentException. 
 	if(permits<0)
-		throw IllegalReleasePermitsArgumentException();
+		throw NegativeReleasePermitsException();
 
 	// Take a lock and start the work.
 	unique_lock<mutex> exclusiveLock(m_mutex);
@@ -226,7 +226,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 			int permitCount=iter->second;
 			if(permits>permitCount)
 			{
-				throw string("Exception : An attempt was made to release permits greater than the current number of permits [in strict mode] held by the thread id = " + threadId);
+				throw ExcessReleasePermitsException();				
 			}				
 			else
 			{
@@ -238,7 +238,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 		}	
 		else
 		{
-			throw IllegalRelasePermitsException();
+			throw IllegalPermitsReleaseException();
 		}
 	}
 }

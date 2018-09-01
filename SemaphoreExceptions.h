@@ -16,35 +16,35 @@ struct IllegalArgumentException : public std::exception
 };
 
 
-const char* IllegalReleasePermitsArgumentException_msg = "Exception : release method can not have -ve permits. Please check the value.";
+const char* NegativeReleasePermitsException_msg = "Exception : release method can not have -ve permits. Please check the value.";
 
-struct IllegalReleasePermitsArgumentException : public std::exception
+struct NegativeReleasePermitsException : public std::exception
 {
 	const char * what () const throw ()
 	{
-		return(IllegalReleasePermitsArgumentException_msg);
+		return(NegativeReleasePermitsException_msg);
 	}
 };
 
 
-const char* IllegalReleasePermitsReleaseException_msg = "Exception : An attempt was made to release permits greater than the current number of permits [in strict mode] held by the thread id =";
+const char* ExcessReleasePermitsException_msg = "Exception : An attempt was made to release permits greater than the current number of permits [in strict mode] held by the Thread id =";
 
-struct IllegalReleasePermitsReleaseException : public std::exception
+struct ExcessReleasePermitsException : public std::exception
 {
 	const char * what () const throw ()
 	{
-		return(IllegalReleasePermitsReleaseException_msg);
+		return(ExcessReleasePermitsException_msg);
 	}
 };
 
 
-const char* IllegalRelasePermitsException_msg = "Exception : An attempt was made by thread id = to release permits in strict mode where it has no currently acquired permits.Please investigate.";
+const char* IllegalPermitsReleaseException_msg = "Exception : An attempt was made to release permits in strict mode where it has no currently acquired permits.Please investigate. Thread id =";
 
-struct IllegalRelasePermitsException : public std::exception
+struct IllegalPermitsReleaseException : public std::exception
 {
 	const char * what () const throw ()
 	{
-		return(IllegalRelasePermitsException_msg);
+		return(IllegalPermitsReleaseException_msg);
 	}
 };
 
