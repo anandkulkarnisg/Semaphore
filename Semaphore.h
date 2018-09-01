@@ -46,7 +46,7 @@ class Semaphore
 		void acquire(const int&);								// Ask for a bulk permit blocking in nature.
 		int availablePermits();									// Indicate available number of permit currently. Best case estimate as it can change any moment after the value is returned.
 		int drainPermits();										// drain all the existing available permits and use them. If -ve permits are available then release them [ till it becomes zero ].
-		std::vector<std::string> getQueuedThreads();			// This returns a list of strings that indicate the thread-ids currently queued for the Semaphore.
+		std::deque<std::tuple<std::string, int>> getQueuedThreads();			// This returns a list of strings that indicate the thread-ids currently queued for the Semaphore.
 		int getQueueLength();									// This indicates the length of the queue waiting for permits.
 		bool hasQueuedThreads();								// Indicates if threads are waiting for permits.
 		bool isFair();											// Is there scheduling of incoming request for permits into a FIFO queue ?
@@ -59,6 +59,7 @@ class Semaphore
 		bool tryAcquire(const int&);							// Acquires the given number of permits from this semaphore, only if all are available at the time of invocation.
 		bool tryAcquire(const int&, const long&);				// Acquires the given number of permits from this semaphore, if all become available within the given waiting time.
 		void printCurrentPermitsInfo();							// only available in strict mode of ownership. Else not available.
+		void printQueuedThreadsInfo();							// This prints out in nice format queued threads and the count acquire for which they are waiting.
 };
 
 #endif

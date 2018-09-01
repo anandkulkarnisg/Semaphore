@@ -48,7 +48,7 @@ void Semaphore::updateOrDeleteMap(const string& threadId, const int& permitCount
 {
 	auto iter=m_map.find(threadId);
 	if(permitCount>0)
-		iter->second-=permitCount;		
+		iter->second=permitCount;		
 	else
 		m_map.erase(iter);					
 }
@@ -56,6 +56,10 @@ void Semaphore::updateOrDeleteMap(const string& threadId, const int& permitCount
 // Next We implement the acquire method as core Internal utlity. This is called by both single and bulk acquire methods.The acquire blocks till a permit is available. Else simply returns once permits available.
 void Semaphore::acquireInternal(const int& permits = 1)
 {
+	// Edge case : if permits is zero. simply return. We dont acquire zero permits.
+	if(permits==0)
+		return;
+
 	// First let us take a lock to proceed further.
 	unique_lock<mutex> exclusiveLock(m_mutex);
 	string threadId = getThreadId();
@@ -137,14 +141,18 @@ int Semaphore::drainPermits()
 }
 
 // Implement the method getQueuedThreads. Return a vector of string each of which is a threadId that is currently queued waiting for a permit to become available.
-vector<string> Semaphore::getQueuedThreads()
+deque<tuple<string,int>> Semaphore::getQueuedThreads()
 {
 	unique_lock<mutex> exclusiveLock(m_mutex);
-	vector<string> returnVector;
-	returnVector.reserve(m_queue.size());
-	for(const auto& iter : m_queue)
-		returnVector.emplace_back(get<0>(iter));
-	return(returnVector);
+	return(m_queue);
+}
+
+// Implement the method printQueuedThreadsInfo. This will print in nice format the threads queued for acquire and count they are waiting for.
+void Semaphore::printQueuedThreadsInfo()
+{
+	deque<tuple<string,int>> resultQueue = getQueuedThreads();
+	for(const auto& iter : resultQueue)
+		std::cout << "Waiting Thread id = " << get<0>(iter) << ", acquireCount = " << get<1>(iter) << std::endl;
 }
 
 // Implement getQueueLength Method. Returns the length of the Queue of threads that are currently waiting for the permit to become available.
@@ -180,7 +188,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 {
 	// First of all if the permits is a -ve number then throw IllegalArgumentException. 
 	if(permits<0)
-		throw string("Exception : release method can not have -ve permits. Please check the value.");
+		throw IllegalReleasePermitsArgumentException();
 
 	// Take a lock and start the work.
 	unique_lock<mutex> exclusiveLock(m_mutex);
@@ -213,7 +221,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 		}	
 		else
 		{
-			throw string("Exception : An attempt was made by thread id = " + threadId + " to release permits in strict mode where it has no currently acquired permits.Please investigate.");
+			throw IllegalRelasePermitsException();
 		}
 	}
 }
@@ -241,7 +249,7 @@ std::string Semaphore::toString()
 	returnString += ", permits available = " + to_string(m_permits);
 	returnString += ", fairness = " + to_string(m_fair);
 	returnString += ", strict = " + to_string(m_strict);
-	returnString += ", waiting threads queue length = " + to_string(m_queue.size());
+	returnString += ", waiting threads queue length = " + to_string(m_queue.size()) + ". ]";
 	return(returnString);
 }
 
