@@ -40,7 +40,7 @@ class Semaphore
 		void reducePermits(const int&);							// This Shrinks the number of available permits by the indicated reduction.
 
 	public:
-		Semaphore(const int&, const bool&, const bool&);		// This is the only constructor available.
+		Semaphore(const int&, const bool& = false, const bool& = false);		// This is the only constructor available.
 		Semaphore(const Semaphore&) = delete;					// copy deleted.
 		Semaphore& operator=(const Semaphore&) = delete;		// assignment deleted.
 

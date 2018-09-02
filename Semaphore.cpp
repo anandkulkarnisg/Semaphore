@@ -6,7 +6,7 @@
 using namespace std;
 
 // First implement the Semphore constructor. We have only a single constructor which takes initial permits. Mode of fairness [ default to false ]. Mode of strictness [ default to false ].
-Semaphore::Semaphore(const int& initialPermits, const bool& fair = false, const bool& strict = false) : m_permits(initialPermits), m_fair(fair), m_strict(strict)
+Semaphore::Semaphore(const int& initialPermits, const bool& fair, const bool& strict) : m_permits(initialPermits), m_fair(fair), m_strict(strict)
 {
 	if(strict && initialPermits<0)
 		throw IllegalArgumentException();
@@ -377,9 +377,9 @@ bool Semaphore::tryAcquire(const int& permits, const long& waitTimeInMilliSecs)
 // as many permits as they wish in relaxed mode.
 void Semaphore::printCurrentPermitsInfo()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
 	if(isStrict())
 	{
+		unique_lock<mutex> exclusiveLock(m_mutex);
 		for(const auto& iter : m_map)
 			cout << "Thread id = " << iter.first << ", permitCount = " << iter.second << endl;
 	}
