@@ -55,10 +55,10 @@ void dumpStatus()
 int main(int argc, char* argv[])
 {
 	// Spin off a thread pool where each one waits for successively incremental permits.
-	vector<thread> threadPool;
-	threadPool.reserve(poolSize);
+	vector<thread> acquirePool;
+	acquirePool.reserve(poolSize);
 	for(unsigned int i=1; i<=poolSize; ++i)
-		threadPool.emplace_back(thread(&awaitForPermits,i));
+		acquirePool.emplace_back(thread(&awaitForPermits,i));
 
 	// Now as expected they should all end up queuing for permits as there are no permits for semaphore to start with. Let us check the after waiting a little.
 	this_thread::sleep_for(chrono::seconds(2));
@@ -69,14 +69,14 @@ int main(int argc, char* argv[])
 	// First let us drain the semaphore and bring it to clean status.
 	sem.drainPermits();
 
-	// Now let us try and release the permits via another threadPool one by one.
+	// Now let us try and release the permits via another acquirePool one by one.
 	vector<thread> releasePool;
 	releasePool.reserve(poolSize);		
 	for(unsigned int i=poolSize; i>=1; --i)
-		threadPool.emplace_back(thread(&releasePermits,i,i*100));
+		acquirePool.emplace_back(thread(&releasePermits,i,i*100));
 
 	// Now join the pools.
-	std::for_each(threadPool.begin(), threadPool.end(), [&](thread& threadItem) { threadItem.join(); });
+	std::for_each(acquirePool.begin(), acquirePool.end(), [&](thread& threadItem) { threadItem.join(); });
 	std::for_each(releasePool.begin(), releasePool.end(), [&](thread& threadItem) { threadItem.join(); });
 
 	// Finished.
