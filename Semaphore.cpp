@@ -88,7 +88,7 @@ void Semaphore::acquireInternal(const int& permits = 1)
 		m_queue.push_back(make_tuple(threadId,permits));
 		if(isFair())
 		{
-			m_cond.wait(exclusiveLock, [&](){ return((m_permits-permits)>=0 && get<0>(m_queue[0]) == threadId); });
+			m_cond.wait(exclusiveLock, [&](){ return((m_permits-permits)>=0 && get<0>(*m_queue.begin()) == threadId); });
 			m_queue.pop_front();
 		}
 		else
