@@ -1,0 +1,127 @@
+[anand@ldnpsr2937 Semaphore]$ ./Example8.out 
+Waiting Thread id = 139836827072256, acquireCount = 1
+Waiting Thread id = 139836818679552, acquireCount = 2
+Waiting Thread id = 139836810286848, acquireCount = 3
+Waiting Thread id = 139836801894144, acquireCount = 4
+Waiting Thread id = 139836551853824, acquireCount = 9
+Waiting Thread id = 139836785108736, acquireCount = 6
+Waiting Thread id = 139836543461120, acquireCount = 10
+Waiting Thread id = 139836776716032, acquireCount = 7
+Waiting Thread id = 139836768323328, acquireCount = 8
+Waiting Thread id = 139836793501440, acquireCount = 5
+ ==> [ Semaphore Name = Semaphore.0x6123e0, permits available = -10, fairness = 1, strict = 0, waiting threads queue length = 10. ]
+Successfully release the permits = 1
+Successfully acquired the permits = 1
+Successfully release the permits = 2
+Successfully acquired the permits = 2
+Successfully release the permits = 3
+Successfully acquired the permits = 3
+Successfully release the permits = 4
+Successfully acquired the permits = 4
+Successfully release the permits = 5
+Successfully release the permits = 6
+Successfully acquired the permits = 9
+Successfully release the permits = 7
+Successfully acquired the permits = 6
+Successfully release the permits = 8
+Successfully acquired the permits = 10
+Successfully release the permits = 9
+Successfully acquired the permits = 7
+Successfully release the permits = 10
+Successfully acquired the permits = 8
+
+[ Hung up ].................................
+
+/ ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- /
+
+
+[anand@ldnpsr2937 Semaphore]$ ps -ef | grep -i Example
+anand     8575  8046  0 08:44 pts/0    00:00:00 ./Example8.out
+anand     8664  8615  0 08:45 pts/1    00:00:00 grep --color=auto -i Example
+[anand@ldnpsr2937 Semaphore]$ gdb -p 8575
+GNU gdb (GDB) Fedora 7.11.1-86.fc24
+Copyright (C) 2016 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-redhat-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word".
+Attaching to process 8575
+[New LWP 8580]
+
+warning: the debug information found in "/usr/lib/debug//lib64/libpthread-2.23.so.debug" does not match "/lib64/libpthread.so.0" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//usr/lib64/libpthread-2.23.so.debug" does not match "/lib64/libpthread.so.0" (CRC mismatch).
+
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+warning: the debug information found in "/usr/lib/debug//lib64/libm-2.23.so.debug" does not match "/lib64/libm.so.6" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//usr/lib64/libm-2.23.so.debug" does not match "/lib64/libm.so.6" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//lib64/libc-2.23.so.debug" does not match "/lib64/libc.so.6" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//usr/lib64/libc-2.23.so.debug" does not match "/lib64/libc.so.6" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//lib64/ld-2.23.so.debug" does not match "/lib64/ld-linux-x86-64.so.2" (CRC mismatch).
+
+
+warning: the debug information found in "/usr/lib/debug//usr/lib64/ld-2.23.so.debug" does not match "/lib64/ld-linux-x86-64.so.2" (CRC mismatch).
+
+0x00007f2e4d2ea6bd in pthread_join () from /lib64/libpthread.so.0
+Missing separate debuginfos, use: dnf debuginfo-install glibc-2.23.1-12.fc24.x86_64
+(gdb) info threads
+  Id   Target Id         Frame 
+* 1    Thread 0x7f2e4d904740 (LWP 8575) "Example8.out" 0x00007f2e4d2ea6bd in pthread_join () from /lib64/libpthread.so.0
+  2    Thread 0x7f2e4a673700 (LWP 8580) "Example8.out" 0x00007f2e4d2eebc0 in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+(gdb) thread 2
+[Switching to thread 2 (Thread 0x7f2e4a673700 (LWP 8580))]
+#0  0x00007f2e4d2eebc0 in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+(gdb) where
+#0  0x00007f2e4d2eebc0 in pthread_cond_wait@@GLIBC_2.3.2 () from /lib64/libpthread.so.0
+#1  0x00007f2e4d00f50c in __gthread_cond_wait (__mutex=<optimized out>, __cond=<optimized out>)
+    at /usr/src/debug/gcc-6.3.1-20161221/obj-x86_64-redhat-linux/x86_64-redhat-linux/libstdc++-v3/include/x86_64-redhat-linux/bits/gthr-default.h:864
+#2  std::condition_variable::wait (this=<optimized out>, __lock=...) at ../../../../../libstdc++-v3/src/c++11/condition_variable.cc:53
+#3  0x00007f2e4d5134f3 in std::condition_variable::wait<Semaphore::acquireInternal(int const&)::<lambda()> >(std::unique_lock<std::mutex> &, Semaphore::<lambda()>) (this=0x612430 <sem+80>, __lock=..., __p=...)
+    at /usr/include/c++/6.3.1/condition_variable:99
+#4  0x00007f2e4d5123b4 in Semaphore::acquireInternal (this=0x6123e0 <sem>, permits=@0x7f2e4a672dfc: 5) at /home/anand/git/Semaphore/Semaphore.cpp:91
+#5  0x00007f2e4d512519 in Semaphore::acquire (this=0x6123e0 <sem>, permits=@0x7f2e4a672dfc: 5) at /home/anand/git/Semaphore/Semaphore.cpp:117
+#6  0x000000000040adf5 in awaitForPermits (permits=@0x1d89408: 5) at /home/anand/git/Semaphore/Example8.cpp:25
+#7  0x000000000040e2af in std::_Bind_simple<void (*(unsigned int))(unsigned int const&)>::_M_invoke<0ul>(std::_Index_tuple<0ul>) (this=0x1d89408) at /usr/include/c++/6.3.1/functional:1391
+#8  0x000000000040ded5 in std::_Bind_simple<void (*(unsigned int))(unsigned int const&)>::operator()() (this=0x1d89408) at /usr/include/c++/6.3.1/functional:1380
+#9  0x000000000040ddcc in std::thread::_State_impl<std::_Bind_simple<void (*(unsigned int))(unsigned int const&)> >::_M_run() (this=0x1d89400) at /usr/include/c++/6.3.1/thread:196
+#10 0x00007f2e4d0155cf in std::execute_native_thread_routine (__p=0x1d89400) at ../../../../../libstdc++-v3/src/c++11/thread.cc:83
+#11 0x00007f2e4d2e95ca in start_thread () from /lib64/libpthread.so.0
+#12 0x00007f2e4c77b0cd in clone () from /lib64/libc.so.6
+(gdb) up 4
+#4  0x00007f2e4d5123b4 in Semaphore::acquireInternal (this=0x6123e0 <sem>, permits=@0x7f2e4a672dfc: 5) at /home/anand/git/Semaphore/Semaphore.cpp:91
+91				m_cond.wait(exclusiveLock, [&](){ return((m_permits-permits)>=0 && get<0>(*m_queue.begin()) == threadId); });
+(gdb) print m_permits
+$1 = 5
+(gdb) print permits
+$2 = (const int &) @0x7f2e4a672dfc: 5
+(gdb) print threadId
+$3 = "139836793501440"
+(gdb) print m_queue.begin()
+$4 = std::tuple containing = {[1] = "139836793501440", [2] = 5}
+(gdb) print get<0>(*m_queue.begin())
+No symbol "get<0>" in current context.
+(gdb) print m_queue.begin()
+$5 = std::tuple containing = {[1] = "139836793501440", [2] = 5}
+(gdb) print m_queue[0]
+$6 = std::tuple containing = {[1] = "139836827072256", [2] = 1}
+(gdb) 
+
