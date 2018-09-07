@@ -220,7 +220,19 @@ void Semaphore::releaseInternal(const int& permits=1)
 		m_permits+=permits;
 		// Notify the waiting acquire threads. Unlock before notification else waiting threads will never get the Lock!
 		exclusiveLock.unlock();
-		m_cond.notify_all();
+
+		// This is actually interesting. If the mode is fair then we signal only if we know that the permits that we have released will serve the first item in the queue.
+		if(isFair())
+		{
+			while(hasQueuedThreads() && get<1>(*m_queue.begin()) <=m_permits)
+			{
+				m_cond.notify_all();
+			}
+		}
+		else
+		{
+			m_cond.notify_all();
+		}
 		return;
 	}
 	else
