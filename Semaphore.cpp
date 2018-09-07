@@ -222,6 +222,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 		exclusiveLock.unlock();
 
 		// This is actually interesting. If the mode is fair then we signal only if we know that the permits that we have released will serve the first item in the queue.
+		// We also need to signal in fair mode as long as wait queue exists and we can serve the front item currently. This fixes a rare bug where notify may miss out and some acquire may keep waiting.
 		if(isFair())
 		{
 			while(hasQueuedThreads() && get<1>(*m_queue.begin()) <=m_permits)
