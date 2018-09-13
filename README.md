@@ -1,4 +1,6 @@
- Semaphore
+DataStructure :Semaphore
+
+
 Implementation of a Semaphore in C++ [ Conforming to Implementation interface of standard of Java ].
 
 Author : Anand Kulkarni - 29/08/2018 - Implementation of a Semaphore trying to conform to the Java Implementation standard with additional features.
