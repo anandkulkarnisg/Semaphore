@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 	cout << "tryAcquire status = " << acquireStatus << endl;
 
 	// Now attempt acquire with wait semantics. It should also fail since it cant get anything. Wait for 500 msecs.
-	acquireStatus=sem.tryAcquire(500l);
+	acquireStatus=sem.tryAcquire(500l, TimeUnit::MicroSeconds);
 	cout << "tryAcquire with wait status = " << acquireStatus << endl;
 
 	// Now release the permits back to Semaphore.
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	cout << "tryAcquire status = " << acquireStatus << endl;
 
 	// Now attempt acquire with wait semantics. It should also fail since it cant get anything. Wait for 500 msecs.
-	acquireStatus=sem.tryAcquire(500l);
+	acquireStatus=sem.tryAcquire(500l, TimeUnit::MilliSeconds);
 	cout << "tryAcquire with wait status = " << acquireStatus << endl;
 
 	// Print as much info as possible now.
