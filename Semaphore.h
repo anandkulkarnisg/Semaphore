@@ -12,6 +12,7 @@
 #include<vector>
 
 #include "SemaphoreExceptions.h"
+#include "TimeUtils.h"
 
 #ifndef Semaphore_H
 #define Semaphore_H
@@ -33,7 +34,7 @@ class Semaphore
 		void upsertMap(const std::string&, const int&);			// This is internal function to update m_map in strict mode.
 		void updateOrDeleteMap(const std::string&, const int&); // This is internal function to either update or delete an entry during release in strict mode.
 		void evictThreadIdFromQueue(const std::string&);		// This is internal function to remove a threadId from queue once the permits are available for thread and is not waiting anymore.
-		bool tryAcquireInternal(const int&, const bool&, const long&);	// This internal function implements tryAcquire approach. read Implementation for more details.
+		bool tryAcquireInternal(const int& = 1, const bool& = false, const long& = 0, const TimeUnit& = TimeUnit::MilliSeconds);	// This internal function implements tryAcquire approach. read Implementation for more details.
 		std::string getName();									// This is to derive the Latch name during construction.
 
 	protected:
@@ -57,9 +58,9 @@ class Semaphore
 		void release(const int&);								// rleease permits back in bulk to Semaphore.
 		std::string toString();									// Print a current status and info of Semaphore in friendly fashion. Helpful for debugging.
 		bool tryAcquire();										// Acquires a permit from this semaphore, only if one is available at the time of invocation.
-		bool tryAcquire(const long&);							// Acquires a permit from this semaphore, if one becomes available within the given waiting time else timesout.
+		bool tryAcquire(const long&, const TimeUnit& = TimeUnit::MilliSeconds);		// Acquires a permit from this semaphore, if one becomes available within the given waiting time else timesout.
 		bool tryAcquire(const int&);							// Acquires the given number of permits from this semaphore, only if all are available at the time of invocation.
-		bool tryAcquire(const int&, const long&);				// Acquires the given number of permits from this semaphore, if all become available within the given waiting time.
+		bool tryAcquire(const int&, const long&, const TimeUnit& = TimeUnit::MilliSeconds);	// Acquires the given number of permits from this semaphore, if all become available within the given waiting time.
 		void printCurrentPermitsInfo();							// only available in strict mode of ownership. Else not available.
 		void printQueuedThreadsInfo();							// This prints out in nice format queued threads and the count acquire for which they are waiting.
 };

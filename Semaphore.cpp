@@ -288,11 +288,15 @@ string Semaphore::toString()
 // As their need is immediate. Since they do not queue only map needs update in case of Strict Mode. If they acquire permits then return true else false.
 // First we implement tryAcquireInternal and then wrap the public call around it for clean implementation.
 
-bool Semaphore::tryAcquireInternal(const int& permits=1, const bool& timeOutNeeded = false, const long& waitTimeMilliSecs=0)
+bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded, const long& waitTime, const TimeUnit& unit)
 {
 	// Edge case : if permits is zero. simply return. We dont acquire zero permits.
 	if(permits==0)
 		return(true);
+
+	// Compute the waitTimeMilliSecs here.
+	auto waitTimeDuration = TimeUtils::waitDuration(waitTime, unit);
+	auto waitTimeMilliSecs = waitTimeDuration.count();
 
 	// First of all check if we are in wait mode or not.
 	string threadId = getThreadId();
@@ -365,21 +369,21 @@ bool Semaphore::tryAcquire()
 // Now we Implement the tryAcquire Method which is wrapped around tryAcquireInternal Method.
 bool Semaphore::tryAcquire(const int& permits)
 {
-	bool returnStatus=tryAcquireInternal(permits,false,0);
+	bool returnStatus=tryAcquireInternal(permits);
 	return(returnStatus);
 }
 
 // Now we Implement tryAcquire which wants 1 permit and is willing to wait for it.
-bool Semaphore::tryAcquire(const long& waitTimeInMilliSecs)
+bool Semaphore::tryAcquire(const long& waitTime, const TimeUnit& timeUnit)
 {
-	bool returnStatus=tryAcquireInternal(1,true,waitTimeInMilliSecs);
+	bool returnStatus=tryAcquireInternal(1, true, waitTime, timeUnit);
 	return(returnStatus);
 }
 
 // Now we Implement tryAcquire which wants more than 1 permit and is willing to wait for it.
-bool Semaphore::tryAcquire(const int& permits, const long& waitTimeInMilliSecs)
+bool Semaphore::tryAcquire(const int& permits, const long& waitTime, const TimeUnit& timeUnit)
 {
-	bool returnStatus=tryAcquireInternal(permits,true,waitTimeInMilliSecs);
+	bool returnStatus=tryAcquireInternal(permits,true,waitTime, timeUnit);
 	return(returnStatus);
 }
 
