@@ -383,7 +383,7 @@ bool Semaphore::tryAcquire(const long& waitTime, const TimeUnit& timeUnit)
 // Now we Implement tryAcquire which wants more than 1 permit and is willing to wait for it.
 bool Semaphore::tryAcquire(const int& permits, const long& waitTime, const TimeUnit& timeUnit)
 {
-	bool returnStatus=tryAcquireInternal(permits,true,waitTime, timeUnit);
+	bool returnStatus=tryAcquireInternal(permits, true, waitTime, timeUnit);
 	return(returnStatus);
 }
 
