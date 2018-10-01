@@ -400,3 +400,15 @@ void Semaphore::printCurrentPermitsInfo()
 	}
 }
 
+// We implement the Method reducePermits which was missed out earlier. This is implemented as protected so that any class inheriting from Semaphore can implement / extend the base behaviour.
+// Shrinks the number of available permits by the indicated reduction. This method can be useful in subclasses that use semaphores to track resources that become unavailable. 
+// This method differs from acquire in that it does not block waiting for permits to become available. The reduction can lead to -ve permits. This is allowed as per Java implementation.
+
+void Semaphore::reducePermits(const int& reduction)
+{
+	if(reduction<=0)
+		throw IllegalArgumentException();
+
+	lock_guard<mutex> guardLock(m_mutex);
+	m_permits-=reduction;
+}
