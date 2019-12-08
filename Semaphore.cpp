@@ -72,7 +72,7 @@ void Semaphore::acquireInternal(const int& permits = 1)
 		return;
 
 	// First let us take a lock to proceed further.
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	unique_lock<shared_mutex> exclusiveLock(m_mutex);
 	string threadId = getThreadId();
 
 	// Now check if permits are available and waitQueue is empty. If so simply reduce its count directly.
@@ -120,7 +120,7 @@ void Semaphore::acquire(const int& permits)
 // Implement the method to indicate how many permits are available currently.
 int Semaphore::availablePermits()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	shared_lock<shared_mutex> readerLock(m_mutex);
 	return(m_permits);
 }
 
@@ -132,7 +132,7 @@ int Semaphore::drainPermits()
 	if(m_permits==0)
 		return(returnPermits);
 
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	unique_lock<shared_mutex> exclusiveLock(m_mutex);
 
 	// Weather strict or relaxed mode if permits are available then acquire and release them. If zero permits are available them return zero.
 	// In relaxed mode permits can go -ve , in which case add permits and set it to zero.
@@ -159,7 +159,7 @@ int Semaphore::drainPermits()
 // Implement the method getQueuedThreads. Return a vector of string each of which is a threadId that is currently queued waiting for a permit to become available.
 deque<tuple<string,int>> Semaphore::getQueuedThreads()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	shared_lock<shared_mutex> readerLock(m_mutex);
 	return(m_queue);
 }
 
@@ -174,14 +174,14 @@ void Semaphore::printQueuedThreadsInfo()
 // Implement getQueueLength Method. Returns the length of the Queue of threads that are currently waiting for the permit to become available.
 int Semaphore::getQueueLength()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	shared_lock<shared_mutex> readerLock(m_mutex);
 	return(m_queue.size());
 }
 
 // Implement method hasQueuedThreads. This tells if there are any threads queued for waiting to get permits.
 bool Semaphore::hasQueuedThreads()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	shared_lock<shared_mutex> readerLock(m_mutex);
 	if(m_queue.size()>0)
 		return(true);
 	return(false);
@@ -211,7 +211,7 @@ void Semaphore::releaseInternal(const int& permits=1)
 		throw NegativeReleasePermitsException();
 
 	// Take a lock and start the work.
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	unique_lock<shared_mutex> exclusiveLock(m_mutex);
 	string threadId=getThreadId();
 
 	// Now if we are in relaxed mode then simply release the permits without checking anything further.
@@ -275,7 +275,7 @@ void Semaphore::release(const int& permits)
 // Must be implemented via getQueuedThreads or printCurrentPermitsInfo Methods.
 string Semaphore::toString()
 {
-	unique_lock<mutex> exclusiveLock(m_mutex);
+	shared_lock<shared_mutex> readerLock(m_mutex);
 	string returnString = " ==> [ Semaphore Name = Semaphore." + m_name;	
 	returnString += ", permits available = " + to_string(m_permits);
 	returnString += ", fairness = " + to_string(m_fair);
@@ -304,7 +304,7 @@ bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded
 	{
 		if(m_permits-permits>=0)
 		{
-			unique_lock<mutex> exclusiveLock(m_mutex, defer_lock);
+			unique_lock<shared_mutex> exclusiveLock(m_mutex, defer_lock);
 			if(exclusiveLock.try_lock())
 			{
 				if(m_permits-permits>=0)	// DCLP because after acquiring mutex we dont know if m_count is still valid.
@@ -336,7 +336,7 @@ bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded
 		{
 			if(m_permits-permits>=0)
 			{
-				unique_lock<mutex> exclusiveLock(m_mutex, defer_lock);
+				unique_lock<shared_mutex> exclusiveLock(m_mutex, defer_lock);
 				if(exclusiveLock.try_lock())
 				{
 					if(m_permits-permits>=0)    // DCLP because after acquiring mutex we dont know if m_count is still valid.
@@ -394,7 +394,7 @@ void Semaphore::printCurrentPermitsInfo()
 {
 	if(isStrict())
 	{
-		unique_lock<mutex> exclusiveLock(m_mutex);
+		shared_lock<shared_mutex> readerLock(m_mutex);
 		for(const auto& iter : m_map)
 			cout << "Thread id = " << iter.first << ", permitCount = " << iter.second << endl;
 	}
@@ -409,6 +409,6 @@ void Semaphore::reducePermits(const int& reduction)
 	if(reduction<=0)
 		throw IllegalArgumentException();
 
-	lock_guard<mutex> guardLock(m_mutex);
+	lock_guard<shared_mutex> guardLock(m_mutex);
 	m_permits-=reduction;
 }

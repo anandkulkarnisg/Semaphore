@@ -4,7 +4,7 @@
 #include<deque>
 #include<iostream>
 #include<map>
-#include<mutex>
+#include<shared_mutex>
 #include<sstream>
 #include<string>
 #include<thread>
@@ -22,8 +22,8 @@ class Semaphore
 	private:
 		int m_permits = 0;										// This is the initial number of permits assigned to the semaphore.It can increase or decrease later on while usage.
 		std::string m_name;										// Name specific to the Semaphore.
-		std::mutex m_mutex;										// This is used to manage the synchronization of the threads.		
-		std::condition_variable m_cond;							// It is used for signalling purpose between threads.
+		std::shared_mutex m_mutex;								// This is used to manage the synchronization of the threads.		
+		std::condition_variable_any m_cond;						// It is used for signalling purpose between threads.
 		bool m_fair = false;									// Is is used to indicate if the Semaphore is fair in dealing with queued threads/requests. by default is it false.		
 		bool m_strict = false;									// This is used to implement a strict ownership semantic.If this is set only a thread that has acquired a permit can release [ same amount ].
 		std::deque<std::tuple<std::string, int>> m_queue;		// This is used to queue incoming requests. It has thread-id and two flags that indicate request is bulk/one permit and amount needed.
