@@ -6,7 +6,7 @@
 using namespace std;
 
 Semaphore binarySemLock(1, true, true);
-const int demoLoopCount=100;
+constexpr int demoLoopCount=100;
 
 void printMessage()
 {
