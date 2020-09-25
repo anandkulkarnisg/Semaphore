@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
     acquirePool.emplace_back(thread(&releasePermits,i,i*100));
 
   // Now join the pools.
-  std::for_each(acquirePool.begin(), acquirePool.end(), [&](thread& threadItem) { threadItem.join(); });
-  std::for_each(releasePool.begin(), releasePool.end(), [&](thread& threadItem) { threadItem.join(); });
+  for_each(acquirePool.begin(), acquirePool.end(), [&](thread& threadItem) { threadItem.join(); });
+  for_each(releasePool.begin(), releasePool.end(), [&](thread& threadItem) { threadItem.join(); });
 
   // Print the semaphore status before finish.
   cout << "semaphore status before exit : " << sem.toString() << endl;

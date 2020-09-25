@@ -25,10 +25,9 @@ void awaitForPermits(const unsigned int& permits)
     sem.acquire(permits);
     printCout("Successfully acquired the permits = "+to_string(permits));
   }		
-  catch(const exception& e)
-  {
-    cout << e.what() << endl;	
-  }
+  catch(const exception& e){
+    cout << e.what() << endl;
+  }	
 }
 
 void releasePermits(const unsigned int& permits, const long& waitTimeMilliSecs)
@@ -39,8 +38,7 @@ void releasePermits(const unsigned int& permits, const long& waitTimeMilliSecs)
     sem.release(permits);
     printCout("Successfully release the permits = "+to_string(permits));
   }
-  catch(const exception& e)
-  {
+  catch(const exception& e){
     cout << e.what() << endl;
   }
 }
