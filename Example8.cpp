@@ -20,20 +20,18 @@ void printCout(const string& message)
 
 void awaitForPermits(const unsigned int& permits)
 {
-  try
-  {
+  try{
     sem.acquire(permits);
     printCout("Successfully acquired the permits = "+to_string(permits));
   }		
   catch(const exception& e){
     cout<<e.what()<<endl;
-  }	
+  }
 }
 
 void releasePermits(const unsigned int& permits, const long& waitTimeMilliSecs)
 {
-  try
-  {
+  try{
     this_thread::sleep_for(chrono::milliseconds(waitTimeMilliSecs));
     sem.release(permits);
     printCout("Successfully release the permits = "+to_string(permits));

@@ -20,8 +20,7 @@ void printCout(const string& message)
 
 void awaitForPermits(const unsigned int& permits)
 {
-  try
-  {
+  try{
     sem.acquire(permits);
     printCout("Successfully acquired the permits = "+to_string(permits));
   }		
