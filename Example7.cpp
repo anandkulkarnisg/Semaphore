@@ -15,7 +15,7 @@ mutex cout_mutex;
 void printCout(const string& message)
 {
   lock_guard<mutex> lock(cout_mutex);
-  cout << message << endl;
+  cout<<message<<endl;
 }
 
 void awaitForPermits(const unsigned int& permits)
@@ -25,23 +25,20 @@ void awaitForPermits(const unsigned int& permits)
     sem.acquire(permits);
     printCout("Successfully acquired the permits = "+to_string(permits));
   }		
-  catch(const exception& e)
-  {
-    cout << e.what() << endl;	
+  catch(const exception& e){
+    cout<<e.what()<<endl;	
   }
 }
 
 void releasePermits(const unsigned int& permits, const long& waitTimeMilliSecs)
 {
-  try
-  {
+  try{ 
     this_thread::sleep_for(chrono::milliseconds(waitTimeMilliSecs));
     sem.release(permits);
     printCout("Successfully release the permits = "+to_string(permits));
   }
-  catch(const exception& e)
-  {
-    cout << e.what() << endl;
+  catch(const exception& e){
+    cout<<e.what()<<endl;
   }
 }
 
@@ -49,7 +46,7 @@ void dumpStatus()
 {
   sem.printQueuedThreadsInfo();
   sem.printCurrentPermitsInfo();
-  cout << sem.toString() << endl;
+  cout<<sem.toString()<<endl;
 }
 
 int main(int argc, char* argv[])
@@ -71,7 +68,7 @@ int main(int argc, char* argv[])
 
   // Now let us try and release the permits via another acquirePool one by one.
   vector<thread> releasePool;
-  releasePool.reserve(poolSize);		
+  releasePool.reserve(poolSize);
   for(unsigned int i=poolSize; i>=1; --i)
     acquirePool.emplace_back(thread(&releasePermits,i,i*100));
 
@@ -80,7 +77,7 @@ int main(int argc, char* argv[])
   for_each(releasePool.begin(), releasePool.end(), [&](thread& threadItem) { threadItem.join(); });
 
   // Print the semaphore status before finish.
-  cout << "semaphore status before exit : " << sem.toString() << endl;
+  cout<<"semaphore status before exit : "<<sem.toString()<<endl;
 
   // Finished.
   return(0);

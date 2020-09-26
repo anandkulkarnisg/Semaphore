@@ -14,7 +14,7 @@ void printMessage()
   while(loopCount<demoLoopCount)
   {
     binarySemLock.acquire();
-    cout << "I am currently in thread id =" << this_thread::get_id() << " with a count = " << loopCount << endl;
+    cout<<"I am currently in thread id ="<<this_thread::get_id()<<" with a count = "<<loopCount<<endl;
     binarySemLock.release();
     ++loopCount;
   }

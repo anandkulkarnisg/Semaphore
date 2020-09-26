@@ -58,17 +58,17 @@ void Semaphore::evictThreadIdFromQueue(const string& threadId)
 void Semaphore::updateOrDeleteMap(const string& threadId, const int& permitCount)
 {
   auto iter=m_map.find(threadId);
-  if(permitCount>0)
-    iter->second=permitCount;		
+  if(permitCount)
+    iter->second=permitCount;
   else
-    m_map.erase(iter);					
+    m_map.erase(iter);
 }
 
 // Next We implement the acquire method as core Internal utlity. This is called by both single and bulk acquire methods.The acquire blocks till a permit is available. Else simply returns once permits available.
 void Semaphore::acquireInternal(const int& permits = 1)
 {
   // Edge case : if permits is zero. simply return. We dont acquire zero permits.
-  if(permits==0)
+  if(!permits)
     return;
 
   // First let us take a lock to proceed further.
@@ -76,7 +76,7 @@ void Semaphore::acquireInternal(const int& permits = 1)
   string threadId = getThreadId();
 
   // Now check if permits are available and waitQueue is empty. If so simply reduce its count directly.
-  if(m_permits-permits>=0 && m_queue.size()==0)
+  if(m_permits-permits>=0 && !m_queue.size())
   {
     m_permits-=permits;
     // Now if we are in mode of strictness. Add this info to the map.
@@ -135,8 +135,8 @@ int Semaphore::availablePermits()
 int Semaphore::drainPermits()
 {
   // Edge case : If there are no permits do nothing and return.
-  int returnPermits = 0;
-  if(m_permits==0)
+  int returnPermits=0;
+  if(!m_permits)
     return(returnPermits);
 
   unique_lock<shared_mutex> exclusiveLock(m_mutex);
@@ -210,7 +210,7 @@ bool Semaphore::isStrict()
 void Semaphore::releaseInternal(const int& permits=1)
 {
   // Edge case : if permits is zero. simply return. We dont acquire zero permits.
-  if(permits==0)
+  if(!permits)
     return;
 
   // First of all if the permits is a -ve number then throw IllegalArgumentException. 
@@ -235,9 +235,7 @@ void Semaphore::releaseInternal(const int& permits=1)
     {	
       int permitCount=iter->second;
       if(permits>permitCount)
-      {
         throw ExcessReleasePermitsException();				
-      }				
       else
       {
         m_permits+=permits;
@@ -246,9 +244,7 @@ void Semaphore::releaseInternal(const int& permits=1)
       }
     }
     else
-    {
       throw IllegalPermitsReleaseException();
-    }
   }
   m_cond.notify_all();
 }
@@ -285,7 +281,7 @@ string Semaphore::toString()
 bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded, const long& waitTime, const TimeUnit& unit)
 {
   // Edge case : if permits is zero. simply return. We dont acquire zero permits.
-  if(permits==0)
+  if(!permits)
     return(true);
 
   // Compute the waitTimeMilliSecs here.
@@ -310,18 +306,14 @@ bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded
         }
       }
       else
-      {
         return(false);
-      }
     }
     else
-    {
       return(false);
-    }
   }
   else
   {
-    if(waitTimeMilliSecs == 0)
+    if(!waitTimeMilliSecs)
       return(false);
     auto startTime = chrono::high_resolution_clock::now();
     auto endTime =  chrono::high_resolution_clock::now();
@@ -341,14 +333,12 @@ bool Semaphore::tryAcquireInternal(const int& permits, const bool& timeOutNeeded
             return(true);	
           }
           else
-          {
             exclusiveLock.unlock();	// Else we have a possibility of same thread trying to Lock the mutex multiple times.
-          }
         }		
       }	
-      endTime =  chrono::high_resolution_clock::now();
-      duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime).count();				
-    }	
+      endTime=chrono::high_resolution_clock::now();
+      duration=chrono::duration_cast<chrono::milliseconds>(endTime-startTime).count();
+    }
   }
   return(false);
 }

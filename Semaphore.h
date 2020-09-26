@@ -66,4 +66,3 @@ class Semaphore
 };
 
 #endif
-

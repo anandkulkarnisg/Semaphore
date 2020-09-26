@@ -15,7 +15,7 @@ mutex cout_mutex;
 void printCout(const string& message)
 {
   lock_guard<mutex> lock(cout_mutex);
-  cout << message << endl;
+  cout<<message<<endl;
 }
 
 void awaitForPermits(const unsigned int& permits)
@@ -26,7 +26,7 @@ void awaitForPermits(const unsigned int& permits)
     printCout("Successfully acquired the permits = "+to_string(permits));
   }		
   catch(const exception& e){
-    cout << e.what() << endl;
+    cout<<e.what()<<endl;
   }	
 }
 
@@ -39,7 +39,7 @@ void releasePermits(const unsigned int& permits, const long& waitTimeMilliSecs)
     printCout("Successfully release the permits = "+to_string(permits));
   }
   catch(const exception& e){
-    cout << e.what() << endl;
+    cout<<e.what()<<endl;
   }
 }
 
@@ -47,7 +47,7 @@ void dumpStatus()
 {
   sem.printQueuedThreadsInfo();
   sem.printCurrentPermitsInfo();
-  cout << sem.toString() << endl;
+  cout<<sem.toString()<<endl;
 }
 
 int main(int argc, char* argv[])

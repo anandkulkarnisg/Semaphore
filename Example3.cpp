@@ -14,19 +14,17 @@ mutex cout_mutex;
 void printOut(const string& str1, const string& str2, const thread::id& id)
 {
   unique_lock<mutex> lock(cout_mutex);
-  cout << str1 << id << str2 << endl;
+  cout<<str1<<id<<str2<<endl;
 }
 
 void acquireThreadFunc(const int& permits, const int& waitCount)
 {
-  try
-  {
+  try{
     test.acquire(permits);
     printOut("I am currently running from thread id = ", ". I have successfully acquired permits of count = " + to_string(permits), this_thread::get_id());
   }
-  catch(const exception& e)
-  {
-    cout << e.what() << endl;
+  catch(const exception& e){
+    cout<<e.what()<<endl;
   }
   this_thread::sleep_for(chrono::seconds(waitCount));
   test.release(2);
@@ -37,17 +35,15 @@ void acquireThreadFunc(const int& permits, const int& waitCount)
 
 void waitThreadFunc(const int& permits)
 {
-  try
-  {	
+  try{	
     test.acquire(permits);
     printOut("I am currently running from thread id = ", ". I have successfully acquired permits of count = " + to_string(permits), this_thread::get_id());
     test.printQueuedThreadsInfo();
     test.printCurrentPermitsInfo();
-    cout << test.toString() << endl;
+    cout<<test.toString()<<endl;
   }
-  catch(const exception& e)
-  {
-    cout << e.what() << endl;
+  catch(const exception& e){
+    cout<<e.what()<<endl;
   }
 }
 
@@ -58,6 +54,7 @@ void waitThreadFunc(const int& permits)
 int main(int argc, char* argv[])
 {
   // Test Case 1 : Spin a thread that will acquire all the permits and wait for given period of time and then release the permit.
+  cout<<"Warning : This code can get locked and it is expected to in specific case. This is not a bug. use CTRL+C if it does not finish"<<endl;
   thread t1(&acquireThreadFunc, 10, 5);
 
   // Spin two threads that will wait for the permits to become available and then release them one by one in the first thread.
